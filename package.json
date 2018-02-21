@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint --ext .js main.js"
+    "eslint": "eslint --ext .js main.js",
+    "start": "node break/first.js > firstResult.txt && node break/second.js > secondResult.txt && node break/third.js > thirdResult.txt"
   },
   "author": "",
   "license": "MIT",

@@ -61,9 +61,108 @@ const playFair = {
         set.add(letter)
     })
     let array = [...set]
+    let pairs = createPairs(deleteSpaces(message))
+    let ciphered = pairs.map(pair => {
+      pair += pair.length !== 2 ? 'x' : ''
+      let firstIndex = array.findIndex(i => pair[0] === 'j'? i === 'i' : i === pair[0])
+      let secondIndex = array.findIndex(i => pair[1] === 'j'? i === 'i' : i === pair[1])
+      let firstCoord = {
+        column: firstIndex % 5,
+        row: Math.floor(firstIndex/5),
+      }
+      let secondCoord = {
+        column: secondIndex % 5,
+        row: Math.floor(secondIndex/5),
+      }
+      let newfirstCoord, newSecondCoord = {}
+      if(firstCoord.row === secondCoord.row){
+        newfirstCoord = {
+          column: (firstCoord.column + 1) % 5,
+          row: firstCoord.row,
+        }
+        newSecondCoord = {
+          column: (secondCoord.column + 1) % 5,
+          row: secondCoord.row,
+        }
+      } else if(firstCoord.column === secondCoord.column){
+        newfirstCoord = {
+          column: firstCoord.column,
+          row: (firstCoord.row + 1) % 5,
+        }
+        newSecondCoord = {
+          column: secondCoord.column,
+          row: (secondCoord.row + 1) % 5,
+        }
+      } else {
+        newfirstCoord = {
+          column: secondCoord.column,
+          row: firstCoord.row,
+        }
+        newSecondCoord = {
+          column: firstCoord.column,
+          row: secondCoord.row,
+        }
+      }
+      return '' + array[(newfirstCoord.row * 5) + newfirstCoord.column] + array[(newSecondCoord.row * 5) + newSecondCoord.column]
+    })
+    return ciphered.join(' ')
   },
   descipher: (message, key, alphabet) => {
-
+    let set = new Set
+    key.split('').forEach(letter => {
+      if(letter !== 'j')
+        set.add(letter)
+    })
+    alphabet.forEach(letter => {
+      if(letter !== 'j')
+        set.add(letter)
+    })
+    let array = [...set]
+    let pairs = createPairs(deleteSpaces(message))
+    let ciphered = pairs.map(pair => {
+      pair += pair.length !== 2 ? 'x' : ''
+      let firstIndex = array.findIndex(i => pair[0] === 'j'? i === 'i' : i === pair[0])
+      let secondIndex = array.findIndex(i => pair[1] === 'j'? i === 'i' : i === pair[1])
+      let firstCoord = {
+        column: firstIndex % 5,
+        row: Math.floor(firstIndex/5),
+      }
+      let secondCoord = {
+        column: secondIndex % 5,
+        row: Math.floor(secondIndex/5),
+      }
+      let newfirstCoord, newSecondCoord = {}
+      if(firstCoord.row === secondCoord.row){
+        newfirstCoord = {
+          column: firstCoord.column - 1 < 0? 4 : (firstCoord.column - 1) % 5,
+          row: firstCoord.row,
+        }
+        newSecondCoord = {
+          column: secondCoord.column - 1 < 0? 4:(secondCoord.column - 1) % 5,
+          row: secondCoord.row,
+        }
+      } else if(firstCoord.column === secondCoord.column){
+        newfirstCoord = {
+          column: firstCoord.column,
+          row: firstCoord.row - 1 < 0? 4 : (firstCoord.row - 1) % 5,
+        }
+        newSecondCoord = {
+          column: secondCoord.column,
+          row: secondCoord.row - 1 < 0? 4: (secondCoord.row - 1) % 5,
+        }
+      } else {
+        newfirstCoord = {
+          column: secondCoord.column,
+          row: firstCoord.row,
+        }
+        newSecondCoord = {
+          column: firstCoord.column,
+          row: secondCoord.row,
+        }
+      }
+      return '' + array[(newfirstCoord.row * 5) + newfirstCoord.column] + array[(newSecondCoord.row * 5) + newSecondCoord.column]
+    })
+    return ciphered.join(' ')
   },
 }
 
@@ -181,9 +280,6 @@ const railFence = {
 const columnar = {
   cipher: (message, key, alphabet) => {
     let cleanMessage = deleteSpaces(message)
-    /*while(cleanMessage.length % key.length !== 0){
-      cleanMessage += 'x'
-    }*/
     let table = []
     let messageArray = cleanMessage.match(new RegExp(`.{1,${key.length}}`, "g"))
     key.split('').forEach((k) => {
@@ -224,10 +320,9 @@ const columnar = {
     let partLength = Math.ceil(cleanMessage.length / key.length)
     let incompleteColumns = (partLength * key.length) - cleanMessage.length
     let completeColumns = key.length - incompleteColumns
-    let columns = [] //cleanMessage.match(new RegExp(`.{1,${partLength}}`, "g"))
+    let columns = [] 
     let ind = 0
     for(let i = 0; i < cleanMessage.length;){
-      //let spaces = Math.ceil((cleanMessage.length - i) / (key.length - ind))
       if(orders.findIndex((coso) => coso === ind) < completeColumns) {
         columns.push(cleanMessage.substr(i,partLength))
         i += partLength
@@ -236,9 +331,6 @@ const columnar = {
         columns.push(cleanMessage.substr(i,partLength - 1))
         i += partLength - 1
       }
-      //console.log(cleanMessage.substr(i,spaces))
-      //console.log(spaces)
-      
       ind++
     }
     orderedKey.split('').forEach((k, index) => {
